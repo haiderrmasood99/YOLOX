@@ -120,12 +120,12 @@ class Predictor(object):
         self.fp16 = fp16
         self.preproc = ValTransform(legacy=legacy)
         if trt_file is not None:
-            from torch2trt import TRTModule
+            from tor2trt import TRTModule
 
             model_trt = TRTModule()
-            model_trt.load_state_dict(torch.load(trt_file))
+            model_trt.load_state_dict(tor.load(trt_file))
 
-            x = torch.ones(1, 3, exp.test_size[0], exp.test_size[1]).cuda()
+            x = tor.ones(1, 3, exp.test_size[0], exp.test_size[1]).cuda()
             self.model(x)
             self.model = model_trt
 
@@ -146,14 +146,14 @@ class Predictor(object):
         img_info["ratio"] = ratio
 
         img, _ = self.preproc(img, None, self.test_size)
-        img = torch.from_numpy(img).unsqueeze(0)
+        img = tor.from_numpy(img).unsqueeze(0)
         img = img.float()
         if self.device == "gpu":
             img = img.cuda()
             if self.fp16:
                 img = img.half()  # to FP16
 
-        with torch.no_grad():
+        with tor.no_grad():
             t0 = time.time()
             outputs = self.model(img)
             if self.decoder is not None:
@@ -235,8 +235,8 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
                 output_path = f"output_frame_{frame_count}.jpg"
                 cv2.imwrite(output_path, result_frame)
                 frame_count += 1  # Increment frame counter
-            if ch == 27 or ch == ord("q") or ch == ord("Q"):
-                break
+            # if ch == 27 or ch == ord("q") or ch == ord("Q"):
+            #     break
         else:
             break
 
