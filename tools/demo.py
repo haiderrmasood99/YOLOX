@@ -232,14 +232,13 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
             if args.save_result:
                 vid_writer.write(result_frame)
             else:
-                cv2.namedWindow("yolox", cv2.WINDOW_NORMAL)
-                cv2.imshow("yolox", result_frame)
-            ch = cv2.waitKey(1)
+                output_path = f"output_frame_{frame_count}.jpg"
+                cv2.imwrite(output_path, result_frame)
+                frame_count += 1  # Increment frame counter
             if ch == 27 or ch == ord("q") or ch == ord("Q"):
                 break
         else:
             break
-
 
 def main(exp, args):
     if not args.experiment_name:
