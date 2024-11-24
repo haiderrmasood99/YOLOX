@@ -123,9 +123,9 @@ class Predictor(object):
             from tor2trt import TRTModule
 
             model_trt = TRTModule()
-            model_trt.load_state_dict(tor.load(trt_file))
+            model_trt.load_state_dict(torch.load(trt_file))
 
-            x = tor.ones(1, 3, exp.test_size[0], exp.test_size[1]).cuda()
+            x = torch.ones(1, 3, exp.test_size[0], exp.test_size[1]).cuda()
             self.model(x)
             self.model = model_trt
 
@@ -146,14 +146,14 @@ class Predictor(object):
         img_info["ratio"] = ratio
 
         img, _ = self.preproc(img, None, self.test_size)
-        img = tor.from_numpy(img).unsqueeze(0)
+        img = torch.from_numpy(img).unsqueeze(0)
         img = img.float()
         if self.device == "gpu":
             img = img.cuda()
             if self.fp16:
                 img = img.half()  # to FP16
 
-        with tor.no_grad():
+        with torch.no_grad():
             t0 = time.time()
             outputs = self.model(img)
             if self.decoder is not None:
